@@ -1,0 +1,11 @@
+# Railway ignore patterns
+test_*.php
+start-railway.sh
+simple_db_test.php
+test_db_connection.php
+*.log
+storage/logs/*
+node_modules/
+vendor/
+.env
+.git/
