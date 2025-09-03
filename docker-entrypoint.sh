@@ -11,6 +11,15 @@ export APP_ENV=production
 export APP_DEBUG=false
 
 echo "🚀 Starting Laravel application with Nginx + PHP-FPM..."
+echo "📁 Checking build assets..."
+
+# Debug: Check if assets exist
+if [ -f "/app/public/build/assets/app-BCXFDP9b.css" ]; then
+    echo "✅ CSS file exists: $(ls -la /app/public/build/assets/app-BCXFDP9b.css)"
+else
+    echo "❌ CSS file missing! Listing build directory:"
+    ls -la /app/public/build/assets/ || echo "Build assets directory doesn't exist"
+fi
 
 # Wait for the database to be ready
 echo "⏳ Waiting for MySQL to be ready..."
