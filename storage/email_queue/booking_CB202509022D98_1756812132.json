@@ -1,0 +1,15 @@
+{
+    "to": "rudraxyt@gmail.com",
+    "admin_to": "rudraxyt@gmail.com",
+    "subject": "Booking Confirmation - Ticket #CB202509022D98",
+    "ticket_number": "CB202509022D98",
+    "customer_name": "Test Customer",
+    "destination": "Test Destination",
+    "travelers": 2,
+    "phone": "+91 1234567890",
+    "booking_date": "Sep 02, 2025 11:22",
+    "start_date": "TBD",
+    "end_date": "TBD",
+    "budget": "\u20b95,000 - \u20b910,000",
+    "special_requirements": "This is a test booking"
+}
