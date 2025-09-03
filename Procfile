@@ -1,2 +1,1 @@
-release: php artisan migrate --force
-web: php artisan serve --host=0.0.0.0 --port=$PORT
+web: sleep 10 && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT
