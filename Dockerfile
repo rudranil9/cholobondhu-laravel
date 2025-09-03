@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libpng-dev \
     libonig-dev \
-    libxml2-dev
+    libxml2-dev \
+    default-mysql-client
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
@@ -20,23 +21,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
-# Copy composer files
-COPY composer*.json ./
-
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy package files
-COPY package*.json ./
-
-# Install Node dependencies
-RUN npm ci
-
-# Copy the rest of the application
+# Copy the entire application first
 COPY . .
 
-# Build assets
-RUN npm run build
+# Install PHP dependencies (after artisan is available)
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Install Node dependencies and build assets
+RUN npm ci && npm run build
 
 # Create storage directories
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
@@ -44,8 +36,18 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Expose port
-EXPOSE 8080
+# Now run composer scripts (artisan is available)
+RUN composer run-script post-autoload-dump
 
-# Start the application
-CMD php artisan migrate:fresh --force && php artisan serve --host=0.0.0.0 --port=8080
+# Expose port
+EXPOSE $PORT
+
+# Start the application with MySQL wait
+CMD echo "Waiting for MySQL..." && \
+    sleep 30 && \
+    echo "Testing MySQL connection..." && \
+    php artisan tinker --execute="DB::connection()->getPdo(); echo 'Database connected!';" && \
+    echo "Running migrations..." && \
+    php artisan migrate:fresh --force && \
+    echo "Starting Laravel server..." && \
+    php artisan serve --host=0.0.0.0 --port=$PORT
