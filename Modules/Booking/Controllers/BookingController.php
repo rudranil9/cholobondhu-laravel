@@ -13,9 +13,9 @@ class BookingController extends Controller
 {
     protected $bookingService;
 
-    public function __construct(BookingService $bookingService)
+    public function __construct(BookingService $bookingService = null)
     {
-        $this->bookingService = $bookingService;
+        $this->bookingService = $bookingService ?: app(BookingService::class);
     }
 
     public function index()
