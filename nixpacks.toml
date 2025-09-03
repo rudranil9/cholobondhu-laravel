@@ -1,5 +1,11 @@
-[start]
-cmd = "php artisan config:clear && php artisan migrate:fresh --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+[phases.build]
+cmd = "composer install --no-dev --optimize-autoloader && npm ci && npm run build"
 
-[build]
-cmd = "composer install --no-dev --optimize-autoloader && npm run build"
+[phases.setup]
+cmd = "mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache"
+
+[start]
+cmd = "php artisan config:clear && sleep 15 && php artisan migrate:fresh --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+
+[variables]
+PHP_VERSION = "8.2"
