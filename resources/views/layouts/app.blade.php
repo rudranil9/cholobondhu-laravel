@@ -40,13 +40,28 @@
     @endphp
     
     @if($isProduction)
-        <!-- Strategy 1: Direct absolute paths -->
-        <link rel="stylesheet" href="/build/assets/app-BCXFDP9b.css" type="text/css">
+        <!-- FIXED: Use manifest.json to get correct CSS file name -->
+        @php
+            $manifestPath = public_path('build/manifest.json');
+            $manifest = [];
+            if (file_exists($manifestPath)) {
+                $manifest = json_decode(file_get_contents($manifestPath), true);
+            }
+            
+            $cssFile = $manifest['resources/css/app.css']['file'] ?? 'assets/app.css';
+            $jsFile = $manifest['resources/js/app.js']['file'] ?? 'assets/app.js';
+        @endphp
         
-        <!-- Strategy 2: Asset helper paths -->
-        <link rel="stylesheet" href="{{ asset('build/assets/app-BCXFDP9b.css') }}" type="text/css">
+        <!-- Strategy 1: Use correct manifest file path -->
+        <link rel="stylesheet" href="/build/{{ $cssFile }}" type="text/css">
         
-        <!-- Strategy 3: Inline critical CSS as absolute fallback -->
+        <!-- Strategy 2: Asset helper with manifest path -->
+        <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}" type="text/css">
+        
+        <!-- Strategy 3: Direct current build paths as backup -->
+        <link rel="stylesheet" href="/build/assets/app-Dk15iVT-.css" type="text/css">
+        
+        <!-- Strategy 4: Inline critical CSS as absolute fallback -->
         <style id="critical-css">
             /* Tailwind Reset & Base */
             *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
