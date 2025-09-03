@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    default-mysql-client
+    default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
@@ -39,7 +40,11 @@ FROM php:8.2-fpm
 # Install production system dependencies
 RUN apt-get update && apt-get install -y \
     nginx \
-    default-mysql-client
+    default-mysql-client \
+    libonig5 \
+    libpng16-16t64 \
+    libxml2 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install production PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd

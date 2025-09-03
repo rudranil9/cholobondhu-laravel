@@ -1,8 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
-echo "🚀 Starting Laravel application..."
+# Exit immediately if a command exits with a non-zero status.
+set -e
 
-# Wait for MySQL to be ready
+# Set default PORT if not provided
+PORT=${PORT:-8080}
+
+echo "🚀 Starting Laravel application with Nginx + PHP-FPM..."
+
+# Wait for the database to be ready
 echo "⏳ Waiting for MySQL to be ready..."
 max_attempts=30
 attempt=1
@@ -29,7 +35,7 @@ while [ $attempt -le $max_attempts ]; do
         fi
         echo "⏳ MySQL not ready yet, waiting 10 seconds..."
         sleep 10
-        ((attempt++))
+        attempt=$((attempt + 1))
     fi
 done
 
@@ -41,5 +47,15 @@ else
     exit 1
 fi
 
-echo "🌟 Starting Laravel development server..."
-exec php artisan serve --host=0.0.0.0 --port=$PORT
+echo "⚙️ Configuring Nginx for port $PORT..."
+
+# Update nginx configuration with the correct port
+sed -i "s/listen 8080/listen $PORT/g" /etc/nginx/sites-enabled/default
+
+echo "🚀 Starting PHP-FPM..."
+# Start PHP-FPM in the background
+php-fpm -D
+
+echo "🌐 Starting Nginx on port $PORT..."
+# Start Nginx in the foreground to keep container running
+exec nginx -g "daemon off;"
