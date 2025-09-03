@@ -99,12 +99,34 @@
             .transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms}
             
             /* Navigation */
-            nav{background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0/0.1);position:sticky;top:0;z-index:50}
+            nav{background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0/0.1);position:fixed;top:0;left:0;right:0;z-index:50;transition:all 0.3s ease}
+            .dark nav{background:#1f2937;border-bottom:1px solid #374151}
             .nav-container{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;max-width:1200px;margin:0 auto}
             .logo{width:60px;height:60px;border-radius:50%}
             .nav-links{display:flex;align-items:center;gap:2rem}
-            .nav-link{color:#374151;text-decoration:none;font-weight:500;transition:color 0.3s}
-            .nav-link:hover{color:#3b82f6}
+            .nav-link{color:#374151;text-decoration:none;font-weight:500;transition:all 0.3s ease;padding:0.5rem 0.75rem;border-radius:0.375rem}
+            .nav-link:hover{color:#3b82f6;transform:translateY(-1px)}
+            .dark .nav-link{color:#d1d5db}
+            .dark .nav-link:hover{color:#60a5fa}
+            
+            /* Mobile Navigation */
+            @media (max-width: 768px) {
+                .md\\:hidden{display:block}
+                .md\\:flex{display:none}
+                .nav-container{padding:1rem}
+            }
+            
+            /* Dropdown */
+            .dropdown{position:relative}
+            .dropdown-menu{position:absolute;right:0;top:100%;background:#fff;border-radius:0.5rem;box-shadow:0 10px 15px -3px rgb(0 0 0/0.1);padding:0.5rem;margin-top:0.5rem;min-width:12rem}
+            .dark .dropdown-menu{background:#374151;border:1px solid #4b5563}
+            
+            /* Button styles */
+            .btn-primary{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;padding:0.5rem 1.5rem;border-radius:0.5rem;font-weight:600;transition:all 0.3s;text-decoration:none;display:inline-block}
+            .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(0,0,0,0.2);background:linear-gradient(135deg,#1d4ed8,#7c3aed)}
+            
+            /* Ensure body has top padding for fixed nav */
+            body{padding-top:4rem}
             
             /* Hero Section */
             .hero{min-height:100vh;background:linear-gradient(to bottom right,#1e40af,#3b82f6,#8b5cf6);position:relative;display:flex;align-items:center;justify-content:center;text-align:center;color:white}

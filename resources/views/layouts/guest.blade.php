@@ -50,7 +50,7 @@
                 /* Essential Tailwind Classes for Guest Pages */
                 *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
                 html{line-height:1.5;font-family:Figtree,ui-sans-serif,system-ui,sans-serif}
-                body{margin:0;line-height:inherit}
+                body{margin:0;line-height:inherit;padding-top:4rem}
                 .font-sans{font-family:ui-sans-serif,system-ui,sans-serif}
                 .text-gray-900{color:rgb(17 24 39)}
                 .antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
@@ -68,6 +68,63 @@
                 .mt-6{margin-top:1.5rem}
                 .px-6{padding-left:1.5rem;padding-right:1.5rem}
                 .py-4{padding-top:1rem;padding-bottom:1rem}
+                
+                /* Navigation Styles for Guest Layout */
+                nav{background:#fff;box-shadow:0 4px 6px -1px rgb(0 0 0/0.1);position:fixed;top:0;left:0;right:0;z-index:50;transition:all 0.3s ease}
+                .dark nav{background:#1f2937;border-bottom:1px solid #374151}
+                .max-w-7xl{max-width:80rem}
+                .mx-auto{margin-left:auto;margin-right:auto}
+                .px-4{padding-left:1rem;padding-right:1rem}
+                .sm\\:px-6{padding-left:1.5rem;padding-right:1.5rem}
+                .lg\\:px-8{padding-left:2rem;padding-right:2rem}
+                .justify-between{justify-content:space-between}
+                .items-center{align-items:center}
+                .h-16{height:4rem}
+                .space-x-3>*+*{margin-left:0.75rem}
+                .space-x-8>*+*{margin-left:2rem}
+                .w-12{width:3rem}
+                .h-12{height:3rem}
+                .bg-white{background-color:#fff}
+                .rounded-full{border-radius:9999px}
+                .shadow-lg{box-shadow:0 10px 15px -3px rgb(0 0 0/0.1),0 4px 6px -4px rgb(0 0 0/0.1)}
+                .overflow-hidden{overflow:hidden}
+                .border-2{border-width:2px}
+                .border-gray-100{border-color:#f3f4f6}
+                .object-contain{object-fit:contain}
+                .text-xl{font-size:1.25rem}
+                .font-bold{font-weight:700}
+                .text-gray-900{color:#111827}
+                .dark\\:text-white{color:#fff}
+                .hidden{display:none}
+                .md\\:flex{display:flex}
+                .hover\\:opacity-80:hover{opacity:0.8}
+                .transition-opacity{transition-property:opacity}
+                .nav-link{color:#374151;text-decoration:none;font-weight:500;transition:all 0.3s ease;padding:0.5rem 0.75rem;border-radius:0.375rem;font-size:0.875rem}
+                .nav-link:hover{color:#3b82f6;transform:translateY(-1px)}
+                .dark .nav-link{color:#d1d5db}
+                .dark .nav-link:hover{color:#60a5fa}
+                .text-blue-600{color:#2563eb}
+                .dark\\:text-blue-400{color:#60a5fa}
+                .text-gray-700{color:#374151}
+                .dark\\:text-gray-300{color:#d1d5db}
+                .hover\\:text-blue-600:hover{color:#2563eb}
+                .dark\\:hover\\:text-blue-400:hover{color:#60a5fa}
+                .rounded-md{border-radius:0.375rem}
+                .text-sm{font-size:0.875rem}
+                .font-medium{font-weight:500}
+                .transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke}
+                .bg-blue-600{background-color:#2563eb}
+                .text-white{color:#fff}
+                .py-2{padding-top:0.5rem;padding-bottom:0.5rem}
+                .rounded-lg{border-radius:0.5rem}
+                .hover\\:bg-blue-700:hover{background-color:#1d4ed8}
+                
+                /* Mobile Navigation */
+                .md\\:hidden{display:block}
+                @media (min-width: 768px) {
+                    .md\\:flex{display:flex!important}
+                    .md\\:hidden{display:none!important}
+                }
                 .bg-white{background-color:rgb(255 255 255)}
                 .shadow-md{box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1),0 2px 4px -2px rgb(0 0 0 / 0.1)}
                 .overflow-hidden{overflow:hidden}
