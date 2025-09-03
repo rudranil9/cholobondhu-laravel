@@ -36,6 +36,13 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- Ensure CSS is loaded even if Vite fails -->
+    <noscript>
+        <style>
+            @import url("{{ asset('build/assets/app-BCXFDP9b.css') }}");
+        </style>
+    </noscript>
+    
     <style>
         body {
             visibility: hidden;
