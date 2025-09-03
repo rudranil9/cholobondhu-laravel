@@ -1,39 +1,38 @@
 #!/usr/bin/env bash
 
-echo "Starting Railway deployment..."
+echo "=== Railway Deploy Script Starting ==="
 
-# Install composer dependencies
-echo "Installing dependencies..."
-composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+# Wait a moment for database to be ready
+echo "Waiting for database..."
+sleep 5
 
-# Create storage directories if they don't exist
+# Clear any cached config first
+echo "Clearing configuration cache..."
+php artisan config:clear
+
+# Set environment
+echo "Setting up environment..."
+php artisan key:generate --force
+
+# Create storage directories and set permissions
 echo "Setting up storage..."
 mkdir -p storage/logs
 mkdir -p storage/framework/{cache,sessions,views}
 mkdir -p bootstrap/cache
-
-# Set proper permissions (if possible)
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
-# Clear all caches first
-echo "Clearing caches..."
-php artisan config:clear
-php artisan cache:clear
-php artisan route:clear
-php artisan view:clear
-
-# Generate application key if not set
-echo "Generating app key..."
-php artisan key:generate --force
-
 # Run database migrations
-echo "Running migrations..."
+echo "Running database migrations..."
 php artisan migrate --force
 
+# Run database seeders
+echo "Running database seeders..."
+php artisan db:seed --force
+
 # Cache configuration for production
-echo "Caching config..."
+echo "Caching configuration..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "Deployment completed successfully!"
+echo "=== Railway Deploy Script Complete ==="
