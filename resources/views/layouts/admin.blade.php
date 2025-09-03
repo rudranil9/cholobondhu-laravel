@@ -17,8 +17,46 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- PRODUCTION CSS LOADING - MULTIPLE STRATEGIES -->
+    @php
+        $isProduction = app()->environment('production') || !config('app.debug');
+    @endphp
+    
+    @if($isProduction)
+        <!-- Use manifest.json to get correct CSS file name -->
+        @php
+            $manifestPath = public_path('build/manifest.json');
+            $manifest = [];
+            if (file_exists($manifestPath)) {
+                $manifest = json_decode(file_get_contents($manifestPath), true);
+            }
+            
+            $cssFile = $manifest['resources/css/app.css']['file'] ?? 'assets/app.css';
+            $jsFile = $manifest['resources/js/app.js']['file'] ?? 'assets/app.js';
+        @endphp
+        
+        <!-- Strategy 1: Use correct manifest file path -->
+        <link rel="stylesheet" href="/build/{{ $cssFile }}" type="text/css">
+        
+        <!-- Strategy 2: Asset helper with manifest path -->
+        <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}" type="text/css">
+        
+        <!-- Strategy 3: Direct current build paths as backup -->
+        <link rel="stylesheet" href="/build/assets/app-Dk15iVT-.css" type="text/css">
+        
+        <!-- JavaScript -->
+        <script src="/build/{{ $jsFile }}" defer></script>
+        <script src="{{ asset('build/' . $jsFile) }}" defer></script>
+        
+        <script>
+            console.log('🎨 ADMIN PAGE - Production CSS Loading with Manifest');
+            console.log('CSS File:', '{{ $cssFile }}');
+        </script>
+    @else
+        <!-- Development: Use Vite -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>console.log('🚀 ADMIN PAGE - Development Vite Assets Loaded');</script>
+    @endif
     
     <!-- Additional Styles -->
     @stack('styles')
