@@ -50,4 +50,4 @@ CMD echo "Waiting for MySQL..." && \
     echo "Running migrations..." && \
     php artisan migrate:fresh --force && \
     echo "Starting Laravel server..." && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+    php serve.php
