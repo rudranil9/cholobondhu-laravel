@@ -23,11 +23,20 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
+# Copy composer files first
+COPY composer.json composer.lock ./
+
+# Copy environment file for build
+COPY .env.railway .env
+
+# Generate app key for build process
+RUN php -r "copy('.env', '.env.example'); echo 'APP_KEY=' . base64_encode(random_bytes(32)) . PHP_EOL;" >> .env
+
 # Copy application files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install PHP dependencies with proper environment
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Install Node dependencies and build assets
 RUN npm ci && npm run build

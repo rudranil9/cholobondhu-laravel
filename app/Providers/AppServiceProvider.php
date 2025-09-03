@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +22,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // $this->loadModuleRoutes();
+        // Force HTTPS in production
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+            
+            // Set secure cookie settings
+            config([
+                'session.secure' => true,
+                'session.same_site' => 'strict',
+            ]);
+        }
+
+        // Fix for MySQL default string length
+        Schema::defaultStringLength(191);
+        
+        // Load module routes and views
+        $this->loadModuleRoutes();
         $this->loadModuleViews();
     }
 

@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Basic middleware aliases
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
@@ -21,19 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
         
         // Trust proxies for Railway deployment
         $middleware->trustProxies(at: '*');
-        
-        // Force HTTPS in production
-        $middleware->web(prepend: [
-            \App\Http\Middleware\ForceHttps::class,
-        ]);
-        
-        // Add security headers to all requests
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
-        
-        // Check if authenticated users are still active on protected routes
-        $middleware->web(append: [
-            \App\Http\Middleware\CheckUserActive::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
