@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Loading Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5; 
+        }
+        .test-box { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin: 10px 0; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .success { background: #d4edda; border-left: 4px solid #28a745; }
+        .error { background: #f8d7da; border-left: 4px solid #dc3545; }
+        .info { background: #d1ecf1; border-left: 4px solid #17a2b8; }
+    </style>
+</head>
+<body>
+    <h1>CSS Loading Test Page</h1>
+    
+    <div class="test-box info">
+        <h3>🔍 Asset File Check</h3>
+        <p>Checking if CSS files exist in the build directory...</p>
+        <div id="asset-check">Loading...</div>
+    </div>
+
+    <div class="test-box">
+        <h3>🎨 Tailwind CSS Test</h3>
+        <div class="bg-blue-500 text-white p-4 rounded-lg mb-4">
+            This should have blue background and white text (Tailwind)
+        </div>
+        <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+            Hover Test Button
+        </button>
+    </div>
+
+    <div class="test-box">
+        <h3>🌟 Custom Animations Test</h3>
+        <div class="hero-bg hero-animation" style="height: 100px; display: flex; align-items: center; justify-content: center; color: white; border-radius: 8px;">
+            This should have animated gradient background
+        </div>
+    </div>
+
+    <script>
+        // Check if CSS files are accessible
+        async function checkAssets() {
+            const assets = [
+                '/build/assets/app-BCXFDP9b.css',
+                '/build/manifest.json'
+            ];
+            
+            let results = [];
+            
+            for (let asset of assets) {
+                try {
+                    const response = await fetch(asset);
+                    if (response.ok) {
+                        results.push(`✅ ${asset} - OK (${response.status})`);
+                    } else {
+                        results.push(`❌ ${asset} - Error (${response.status})`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${asset} - Network Error: ${error.message}`);
+                }
+            }
+            
+            document.getElementById('asset-check').innerHTML = results.join('<br>');
+        }
+
+        // Run the check when page loads
+        checkAssets();
+
+        // Also check if Tailwind classes are working
+        setTimeout(() => {
+            const testElement = document.querySelector('.bg-blue-500');
+            if (testElement) {
+                const styles = window.getComputedStyle(testElement);
+                const bgColor = styles.backgroundColor;
+                
+                if (bgColor.includes('59, 130, 246') || bgColor.includes('rgb(59, 130, 246)')) {
+                    console.log('✅ Tailwind CSS is working correctly');
+                } else {
+                    console.log('❌ Tailwind CSS not loaded - background color:', bgColor);
+                }
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
