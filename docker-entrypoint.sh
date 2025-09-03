@@ -6,6 +6,10 @@ set -e
 # Set default PORT if not provided
 PORT=${PORT:-8080}
 
+# Ensure production environment
+export APP_ENV=production
+export APP_DEBUG=false
+
 echo "🚀 Starting Laravel application with Nginx + PHP-FPM..."
 
 # Wait for the database to be ready
@@ -39,12 +43,47 @@ while [ $attempt -le $max_attempts ]; do
     fi
 done
 
-echo "🗄️ Running database migrations..."
-if php artisan migrate:fresh --force; then
-    echo "✅ Migrations completed successfully!"
+echo "🗄️ Checking database status..."
+
+# Check if migrations table exists (indicating database is already set up)
+if php artisan tinker --execute="
+    try {
+        \$tables = DB::select('SHOW TABLES');
+        \$migrationTableExists = false;
+        foreach (\$tables as \$table) {
+            \$tableName = array_values((array) \$table)[0];
+            if (\$tableName === 'migrations') {
+                \$migrationTableExists = true;
+                break;
+            }
+        }
+        if (\$migrationTableExists) {
+            echo 'Database already initialized';
+            exit(0);
+        } else {
+            echo 'Database needs initialization';
+            exit(1);
+        }
+    } catch (Exception \$e) {
+        echo 'Database check failed: ' . \$e->getMessage();
+        exit(1);
+    }
+" 2>/dev/null; then
+    echo "✅ Database already initialized, running incremental migrations..."
+    if php artisan migrate --force; then
+        echo "✅ Incremental migrations completed successfully!"
+    else
+        echo "❌ Migration failed!"
+        exit 1
+    fi
 else
-    echo "❌ Migration failed!"
-    exit 1
+    echo "🆕 Fresh database detected, running initial setup..."
+    if php artisan migrate:fresh --force; then
+        echo "✅ Fresh database setup completed successfully!"
+    else
+        echo "❌ Fresh database setup failed!"
+        exit 1
+    fi
 fi
 
 echo "⚙️ Configuring Nginx for port $PORT..."

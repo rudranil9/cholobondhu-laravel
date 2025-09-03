@@ -33,15 +33,17 @@
     <link rel="preload" href="{{ asset('assets/destinations/cholobondhu-logo.jpg') }}" as="image">
     <link rel="preload" href="{{ asset('assets/hero-travel-bg.jpg') }}" as="image">
     
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- Ensure CSS is loaded even if Vite fails -->
-    <noscript>
-        <style>
-            @import url("{{ asset('build/assets/app-BCXFDP9b.css') }}");
-        </style>
-    </noscript>
+    <!-- Force CSS Loading - Direct File Links -->
+    @if(app()->environment('production'))
+        <!-- Direct asset links that WILL work -->
+        <link rel="stylesheet" href="/build/assets/app-BCXFDP9b.css">
+        <script src="/build/assets/app-DtCVKgHt.js" defer></script>
+        
+        <!-- Backup with asset() helper -->
+        <link rel="stylesheet" href="{{ asset('build/assets/app-BCXFDP9b.css') }}" onerror="console.log('CSS failed to load')">
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
     
     <style>
         body {
