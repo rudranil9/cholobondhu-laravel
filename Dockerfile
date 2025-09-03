@@ -37,13 +37,16 @@ RUN npm ci && npm run build
 # Stage 2: Setup the production environment
 FROM php:8.2-fpm
 
-# Install production system dependencies
+# Install production system dependencies with dev packages for extension compilation
 RUN apt-get update && apt-get install -y \
     nginx \
     default-mysql-client \
     libonig5 \
+    libonig-dev \
     libpng16-16t64 \
+    libpng-dev \
     libxml2 \
+    libxml2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install production PHP extensions
