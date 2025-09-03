@@ -34,3 +34,46 @@ Route::get('/debug/css', function () {
     
     return response('CSS file not found', 404);
 });
+
+Route::get('/debug/contact', function () {
+    return response()->json([
+        'contact_route_exists' => Route::has('contact.store'),
+        'contact_route_url' => route('contact.store'),
+        'mail_config' => [
+            'driver' => config('mail.default'),
+            'host' => config('mail.mailers.smtp.host', 'Not set'),
+            'port' => config('mail.mailers.smtp.port', 'Not set'),
+            'username' => config('mail.mailers.smtp.username', 'Not set'),
+            'encryption' => config('mail.mailers.smtp.encryption', 'Not set'),
+            'from_address' => config('mail.from.address', 'Not set'),
+            'from_name' => config('mail.from.name', 'Not set'),
+        ],
+        'env_vars' => [
+            'MAIL_MAILER' => env('MAIL_MAILER'),
+            'MAIL_HOST' => env('MAIL_HOST'),
+            'MAIL_PORT' => env('MAIL_PORT'),
+            'MAIL_USERNAME' => env('MAIL_USERNAME') ? 'Set' : 'Not set',
+            'MAIL_PASSWORD' => env('MAIL_PASSWORD') ? 'Set' : 'Not set',
+        ]
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
+Route::post('/debug/contact-test', function (\Illuminate\Http\Request $request) {
+    try {
+        $data = [
+            'success' => true,
+            'message' => 'Test contact form submission received',
+            'received_data' => $request->all(),
+            'csrf_token_valid' => true, // If we reach here, CSRF is valid
+            'timestamp' => now()->toISOString(),
+        ];
+        
+        return response()->json($data);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});

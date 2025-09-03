@@ -10,6 +10,25 @@ PORT=${PORT:-8080}
 export APP_ENV=production
 export APP_DEBUG=false
 
+# Set APP_URL dynamically for Railway
+if [ -n "$RAILWAY_PUBLIC_DOMAIN" ]; then
+    export APP_URL="https://$RAILWAY_PUBLIC_DOMAIN"
+    echo "🌐 Setting APP_URL to: $APP_URL"
+elif [ -n "$PUBLIC_URL" ]; then
+    export APP_URL="$PUBLIC_URL"
+    echo "🌐 Setting APP_URL to: $APP_URL"
+else
+    # Default fallback - update this with your actual Railway domain
+    export APP_URL="https://web-production-563b2.up.railway.app"
+    echo "🌐 Using default APP_URL: $APP_URL"
+fi
+
+# Force HTTPS settings
+export FORCE_HTTPS=true
+export SESSION_SECURE_COOKIE=true
+export SESSION_SAME_SITE=strict
+export CSRF_COOKIE_SECURE=true
+
 echo "🚀 Starting Laravel application with Nginx + PHP-FPM..."
 echo "📁 Checking build assets..."
 

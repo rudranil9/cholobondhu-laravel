@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             });
             
@@ -295,11 +296,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             errorDiv.classList.remove('hidden');
                         }
                     });
+                } else {
+                    alert('Failed to send message: ' + (data.message || 'Unknown error'));
                 }
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Failed to send message. Please try again or contact us directly.');
+            console.error('Full error details:', {
+                message: error.message,
+                stack: error.stack,
+                url: '{{ route("contact.store") }}'
+            });
+            alert('Failed to send message. Please try again or contact us directly. Error: ' + error.message);
         } finally {
             // Reset button state
             submitBtn.disabled = false;

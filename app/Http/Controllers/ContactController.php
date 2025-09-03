@@ -36,73 +36,96 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:2|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|regex:/^[\d\s\-\+\(\)]+$/',
-            'destination' => 'nullable|string|max:255',
-            'start_date' => 'nullable|date|after_or_equal:today',
-            'end_date' => 'nullable|date|after:start_date',
-            'number_of_travelers' => 'required|integer|min:1|max:50',
-            'budget_range' => 'nullable|string|max:255',
-            'message' => 'required|string|min:10|max:1000',
-            'inquiry_type' => 'in:general,booking,custom-quote'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $inquiry = ContactInquiry::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'destination' => $request->destination,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'number_of_travelers' => $request->number_of_travelers,
-            'budget_range' => $request->budget_range,
-            'message' => $request->message,
-            'inquiry_type' => $request->inquiry_type ?? 'general'
-        ]);
-
-        // Send email notification
-        $emailSent = false;
         try {
-            Mail::to(config('mail.company_email', 'cholo.bondhu.noreply@gmail.com'))
-                ->send(new ContactInquiryMail($inquiry));
-            $emailSent = true;
-            \Log::info('Contact inquiry email sent successfully for inquiry ID: ' . $inquiry->id);
-        } catch (\Exception $e) {
-            \Log::error('Failed to send contact email: ' . $e->getMessage(), [
-                'inquiry_id' => $inquiry->id,
-                'email' => $inquiry->email,
-                'error' => $e->getTraceAsString()
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|min:2|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|regex:/^[\d\s\-\+\(\)]+$/',
+                'destination' => 'nullable|string|max:255',
+                'start_date' => 'nullable|date|after_or_equal:today',
+                'end_date' => 'nullable|date|after:start_date',
+                'number_of_travelers' => 'required|integer|min:1|max:50',
+                'budget_range' => 'nullable|string|max:255',
+                'message' => 'required|string|min:10|max:1000',
+                'inquiry_type' => 'in:general,booking,custom-quote'
             ]);
-        }
 
-        if ($request->expectsJson()) {
-            if ($emailSent) {
+            if ($validator->fails()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Thank you for your inquiry! We will get back to you within 24 hours.'
-                ]);
-            } else {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Your inquiry has been saved. We will contact you soon via phone if email delivery fails.'
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $inquiry = ContactInquiry::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'destination' => $request->destination,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'number_of_travelers' => $request->number_of_travelers,
+                'budget_range' => $request->budget_range,
+                'message' => $request->message,
+                'inquiry_type' => $request->inquiry_type ?? 'general'
+            ]);
+
+            // Send email notification
+            $emailSent = false;
+            $emailError = null;
+            try {
+                Mail::to(config('mail.company_email', 'cholo.bondhu.noreply@gmail.com'))
+                    ->send(new ContactInquiryMail($inquiry));
+                $emailSent = true;
+                \Log::info('Contact inquiry email sent successfully for inquiry ID: ' . $inquiry->id);
+            } catch (\Exception $e) {
+                $emailError = $e->getMessage();
+                \Log::error('Failed to send contact email: ' . $e->getMessage(), [
+                    'inquiry_id' => $inquiry->id,
+                    'email' => $inquiry->email,
+                    'error' => $e->getTraceAsString()
                 ]);
             }
-        }
 
-        $message = $emailSent ? 
-            'Thank you for your inquiry! We will get back to you within 24 hours.' : 
-            'Your inquiry has been saved. We will contact you soon via phone if email delivery fails.';
+            if ($request->expectsJson()) {
+                if ($emailSent) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Thank you for your inquiry! We will get back to you within 24 hours.'
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Your inquiry has been saved. We will contact you soon via phone if email delivery fails.',
+                        'email_error' => app()->environment('production') ? null : $emailError // Only show in dev
+                    ]);
+                }
+            }
+
+            $message = $emailSent ? 
+                'Thank you for your inquiry! We will get back to you within 24 hours.' : 
+                'Your inquiry has been saved. We will contact you soon via phone if email delivery fails.';
+                
+            return redirect()->back()->with('success', $message);
             
-        return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('Contact form error: ' . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'error' => $e->getTraceAsString(),
+                'user_agent' => $request->userAgent(),
+                'ip' => $request->ip()
+            ]);
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred while processing your request. Please try again.',
+                    'error_details' => app()->environment('production') ? null : $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()->with('error', 'An error occurred while processing your request. Please try again.');
+        }
     }
 
     /**

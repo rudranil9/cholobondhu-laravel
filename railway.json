@@ -5,5 +5,15 @@
   "deploy": {
     "restartPolicyType": "ON_FAILURE",
     "startCommand": null
+  },
+  "environments": {
+    "production": {
+      "APP_ENV": "production",
+      "APP_DEBUG": "false",
+      "FORCE_HTTPS": "true",
+      "SESSION_SECURE_COOKIE": "true",
+      "SESSION_SAME_SITE": "strict",
+      "CSRF_COOKIE_SECURE": "true"
+    }
   }
 }

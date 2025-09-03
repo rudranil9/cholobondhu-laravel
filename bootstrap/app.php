@@ -16,6 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
             'user.active' => \App\Http\Middleware\CheckUserActive::class,
+            'force.https' => \App\Http\Middleware\ForceHttps::class,
+        ]);
+        
+        // Trust proxies for Railway deployment
+        $middleware->trustProxies(at: '*');
+        
+        // Force HTTPS in production
+        $middleware->web(prepend: [
+            \App\Http\Middleware\ForceHttps::class,
         ]);
         
         // Add security headers to all requests

@@ -65,6 +65,14 @@ COPY docker/nginx/default.conf /etc/nginx/sites-enabled/default
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Set environment variables for production
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV FORCE_HTTPS=true
+ENV SESSION_SECURE_COOKIE=true
+ENV SESSION_SAME_SITE=strict
+ENV CSRF_COOKIE_SECURE=true
+
 # Set permissions
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 RUN chmod -R 775 /app/storage /app/bootstrap/cache
